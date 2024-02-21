@@ -18,12 +18,8 @@ public class Main {
                         new CommandRunner())
                 .build();
 
-        jda.upsertCommand("TopNigger","Top racist of the server")
-                .setGuildOnly(true)
-                .queue();
-        jda.upsertCommand("LeadingNiggers", "Leaderboard of top niggers")
-                .setGuildOnly(true)
-                .queue();
+        jda.upsertCommand("top-nigga","Top nigger").setGuildOnly(true).queue();
+
     }
 
 }

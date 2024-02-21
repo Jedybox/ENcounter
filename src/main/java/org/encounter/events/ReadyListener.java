@@ -10,6 +10,6 @@ public class ReadyListener implements EventListener {
     @Override
     public void onEvent(@NotNull GenericEvent event) {
         if (event instanceof ReadyEvent)
-            System.out.println( " Nigga Online");
+            System.out.println("Nigga is Online");
     }
 }
