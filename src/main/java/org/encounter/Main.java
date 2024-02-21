@@ -19,7 +19,7 @@ public class Main {
                 .build();
 
         jda.upsertCommand("top-nigga","Top nigger").setGuildOnly(true).queue();
-
+        jda.upsertCommand("leading-niggas", "Leading niggas").setGuildOnly(true).queue();
     }
 
 }

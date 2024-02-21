@@ -14,8 +14,9 @@ public class CommandRunner extends ListenerAdapter {
             case "top-nigga":
                 event.reply("No one is a nigger yet").setEphemeral(true).queue();
                 break;
-            case "leading-nigga":
+            case "leading-niggas":
                 event.reply("There are no niggers yet").setEphemeral(true).queue();
+                break;
         }
 
     }
