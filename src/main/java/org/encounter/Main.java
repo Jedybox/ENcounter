@@ -15,7 +15,8 @@ public class Main {
         JDA jda = jdaBuilder
                 .enableIntents(
                         GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MESSAGES,
-                        GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGE_TYPING
+                        GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGE_TYPING,
+                        GatewayIntent.GUILD_MEMBERS
                 )
                 .addEventListeners(
                         new ReadyListener(),
