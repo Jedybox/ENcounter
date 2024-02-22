@@ -9,7 +9,9 @@ public class MessageListener extends ListenerAdapter {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         super.onMessageReceived(event);
 
-        if (event.getMessage().getContentDisplay().equals("Nigga"))
-            event.getChannel().sendMessage("Stupid Ass").queue();
+        if (!event.getAuthor().isBot()) {
+            if (event.getMessage().getContentDisplay().equals("Nigga"))
+                event.getChannel().sendMessage("Stupid Ass").queue();
+        }
     }
 }
