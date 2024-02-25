@@ -9,10 +9,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class MessageListener extends ListenerAdapter {
@@ -27,12 +24,6 @@ public class MessageListener extends ListenerAdapter {
                 "Whigger", "Wigger", "Monkey", "N1gga", "N1gger",
                 "Nigg@", "N1gg@", "Monkey"
         };
-
-        for (String n_word: N_words) {
-            Pattern pattern = Pattern.compile(n_word, Pattern.CASE_INSENSITIVE);
-            if (pattern.matcher(event.getMessage().getContentDisplay()).find())
-                event.getChannel().sendMessage("Nigger detected").queue();
-        }
 
         HashMap<User, Integer> nigger_board = new HashMap<>();
         Guild guild = event.getGuild();
@@ -69,8 +60,10 @@ public class MessageListener extends ListenerAdapter {
 
             switch (command){
                 case "nig!top":
-                    if (nigger_board.isEmpty())
+                    if (nigger_board.isEmpty()) {
                         event.getChannel().sendMessage("I see no niggers").queue();
+                        return;
+                    }
 
                     int top_score = Collections.max(nigger_board.values());
                     for (Map.Entry<User, Integer> nigger: nigger_board.entrySet()) {
@@ -86,6 +79,24 @@ public class MessageListener extends ListenerAdapter {
                     }
                     break;
                 case "nig!leads":
+                    if (nigger_board.isEmpty()) {
+                        event.getChannel().sendMessage(
+                                "I see no"
+                                + ":regional_indicator_n:" + ":regional_indicator_i:" + ":regional_indicator_g:"
+                                + ":regional_indicator_g:" + ":regional_indicator_e:" + ":regional_indicator_r:")
+                                .queue();
+                        return;
+                    } else if (nigger_board.size() == 1) {
+                        event.getChannel().sendMessage("Top Niggers").queue();
+                        for (Map.Entry<User, Integer> nigger: nigger_board.entrySet()) {
+                            String top_N = "<@" + nigger.getKey().getId() +">";
+                            event.getChannel().sendMessage(
+                                    top_N + "Only leading nigger in the server" + ", SCORE: " + nigger.getValue()
+                            ).queue();
+                        }
+                    } else if (nigger_board.size() == 2 || nigger_board.size() == 3) {
+                        ArrayList<User> niggas = new ArrayList<>();
+                    }
                     break;
                 default:
                     event.getChannel().sendMessage("Nigga, that ain't a command of mine").queue();
