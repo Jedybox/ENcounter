@@ -20,12 +20,8 @@ public class Main {
                 )
                 .addEventListeners(
                         new ReadyListener(),
-                        new MessageListener(),
-                        new CommandRunner())
+                        new MessageListener())
                 .build();
-
-        jda.upsertCommand("top-nigga","Top nigger").setGuildOnly(true).queue();
-        jda.upsertCommand("leading-niggas", "Leading niggas").setGuildOnly(true).queue();
     }
 
 }
