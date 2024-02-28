@@ -20,10 +20,10 @@ public class MessageListener extends ListenerAdapter {
         if (event.getMessage().getAuthor().isBot()) return;
 
         if (event.getMessage().getContentRaw().length() >= 3) {
-            if (!event.getMessage().getContentRaw().contains("nig")) return;
+            if (!event.getMessage().getContentRaw().contains("nig!")) return;
 
             final String command = event.getMessage().getContentRaw();
-            final String[] commands = {"nig!top", "nig!topLeading"};
+            final String[] commands = {"nig!top", "nig!leads"};
             boolean notACommand = true;
             for (String ACommand: commands) {
                 if (command.equals(ACommand)) {
@@ -88,17 +88,67 @@ public class MessageListener extends ListenerAdapter {
                         }
                     }
                     break;
-                case "nig!topLeading":
-                    if (nigger_board.isEmpty()) {
-                        event.getChannel().sendMessage(
-                                "I see no"
-                                + ":regional_indicator_n:" + ":regional_indicator_i:" + ":regional_indicator_g:"
-                                + ":regional_indicator_g:" + ":regional_indicator_e:" + ":regional_indicator_r:"
-                                + ":regional_indicator_s:")
-                                .queue();
-                        return;
+                case "nig!leads":
+                    if (nigger_board.size() >= 3) {
+                        int topScore = Collections.max(nigger_board.values());
+                        User[] niggas = new User[3];
+                        int[] scores = new int[3];
+                        int checker = 0;
+
+                        while (checker < 3) {
+                            for (Map.Entry<User, Integer> nigger: nigger_board.entrySet()) {
+                                if (topScore == nigger.getValue()) {
+                                    nigger_board.remove(nigger.getKey());
+                                    topScore = Collections.max(nigger_board.values());
+
+                                    niggas[checker] = nigger.getKey();
+                                    scores[checker] = nigger.getValue();
+                                    checker++;
+                                    break;
+                                }
+                            }
+                        }
+
+                        event.getChannel()
+                                .sendMessage(
+                                        "The only 2 " + ":regional_indicator_n:" + ":regional_indicator_i:" +
+                                                ":regional_indicator_g:" + ":regional_indicator_g:" +
+                                                ":regional_indicator_e:" + ":regional_indicator_r:" +
+                                                ":regional_indicator_s:\n" +
+                                                "<@" + niggas[0].getId() + ">    Score: " + scores[0] + "\n" +
+                                                "<@" + niggas[1].getId() + ">    Score: " + scores[1] + "\n" +
+                                                "<@" + niggas[2].getId() + ">    Score: " + scores[2]
+                                ).queue();
+                    } else if (nigger_board.size() == 2) {
+                        int topScore = Collections.max(nigger_board.values());
+                        User[] niggas = new User[2];
+                        int[] scores = new int[2];
+                        int checker = 0;
+
+                        while (checker < 2) {
+                            for (Map.Entry<User, Integer> nigga: nigger_board.entrySet()) {
+                                if (topScore == nigga.getValue()) {
+                                    nigger_board.remove(nigga.getKey());
+                                    topScore = Collections.max(nigger_board.values());
+
+                                    niggas[checker] = nigga.getKey();
+                                    scores[checker] = nigga.getValue();
+                                    checker++;
+                                    break;
+                                }
+                            }
+                        }
+
+                        event.getChannel()
+                                .sendMessage(
+                                        "The only 2 " + ":regional_indicator_n:" + ":regional_indicator_i:" +
+                                                ":regional_indicator_g:" + ":regional_indicator_g:" +
+                                                ":regional_indicator_e:" + ":regional_indicator_r:" +
+                                                ":regional_indicator_s:\n" +
+                                                "<@" + niggas[0].getId() + ">    Score: " + scores[0] + "\n" +
+                                                "<@" + niggas[1].getId() + ">    Score: " + scores[1]
+                                ).queue();
                     } else if (nigger_board.size() == 1) {
-                        event.getChannel().sendMessage("Only Nigger racist").queue();
                         for (Map.Entry<User, Integer> nigger: nigger_board.entrySet()) {
                             String top_N = "<@" + nigger.getKey().getId() +">";
                             event.getChannel().sendMessage(
@@ -106,46 +156,12 @@ public class MessageListener extends ListenerAdapter {
                             ).queue();
                         }
                     } else {
-                        if (nigger_board.size() == 2) {
-                            event.getChannel().sendMessage(
-                                    "The only 2 " + ":regional_indicator_n:" + ":regional_indicator_i:" + ":regional_indicator_g:"
-                                            + ":regional_indicator_g:" + ":regional_indicator_e:" + ":regional_indicator_r:"
-                                            + ":regional_indicator_s:"
-                            ).queue();
-
-                            int topScore = Collections.max(nigger_board.values());
-                            HashMap<User, Integer> top1 = new HashMap<>();
-                            HashMap<User, Integer> top2 = new HashMap<>();
-                            int checker = 0;
-
-                            do {
-                                for (Map.Entry<User, Integer> nigga: nigger_board.entrySet()) {
-                                    if (topScore == nigga.getValue()) {
-
-                                        nigger_board.remove(nigga.getKey());
-                                        topScore = Collections.max(nigger_board.values());
-                                        checker++;
-                                    }
-                                }
-                            } while (checker < 2);
-                        } else {
-                            event.getChannel().sendMessage(
-                                    "The top 3 " + ":regional_indicator_n:" + ":regional_indicator_i:" + ":regional_indicator_g:"
-                                            + ":regional_indicator_g:" + ":regional_indicator_e:" + ":regional_indicator_r:"
-                                            + ":regional_indicator_s:"
-                            ).queue();
-                            for (int i = 1; i < 2; i++) {
-                                int score = Collections.max(nigger_board.values());
-                                for (Map.Entry<User, Integer> nigga: nigger_board.entrySet()) {
-                                    if (score == nigga.getValue()) {
-                                        event.getChannel().sendMessage(
-                                                "<@" + nigga.getKey().getId() + ">" + "Nigga Score: " + nigga.getValue()
-                                        ).queue();
-                                        nigger_board.remove(nigga.getKey());
-                                    }
-                                }
-                            }
-                        }
+                        event.getChannel().sendMessage(
+                                        "I see no"
+                                                + ":regional_indicator_n:" + ":regional_indicator_i:" + ":regional_indicator_g:"
+                                                + ":regional_indicator_g:" + ":regional_indicator_e:" + ":regional_indicator_r:"
+                                                + ":regional_indicator_s:")
+                                .queue();
                     }
                     break;
             }

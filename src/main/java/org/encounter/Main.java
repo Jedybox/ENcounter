@@ -9,7 +9,7 @@ import org.encounter.events.*;
 public class Main {
 
     public static void main(String[] args) {
-        final String token = "MTIwNzcwMzUzOTA5MTI0NzE1NQ.GuLyua.dhPdOA0DBvLJw3glC_uwTuC4EB8m77WXiBz2z8";
+        final String token = "MTIxMjIxMDIyODcyOTQ3OTE5OA.G54y0W.siQ1NMWvfxCJ-D1fF-hdE1KgnqtsCu-IyMQ2Wo";
         JDABuilder jdaBuilder = JDABuilder.createDefault(token)
                 .setActivity(Activity.watching("you niggas"));
         JDA jda = jdaBuilder
@@ -20,8 +20,8 @@ public class Main {
                 )
                 .addEventListeners(
                         new ReadyListener(),
-                        new MessageListener())
-                .build();
+                        new MessageListener()
+                ).build();
     }
 
 }
