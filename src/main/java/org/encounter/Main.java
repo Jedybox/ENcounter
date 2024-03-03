@@ -9,12 +9,12 @@ import org.encounter.events.*;
 public class Main {
 
     public static void main(String[] args) {
-        final String token = "MTIxMjIxMDIyODcyOTQ3OTE5OA.G54y0W.siQ1NMWvfxCJ-D1fF-hdE1KgnqtsCu-IyMQ2Wo";
+        final String token = "MTIxMjM1NzI0MDI0MjMwNzE1Mg.G1w1Dx.-AqkGBjwx4MlALZHTzoyStOVqtsbo1oMlaF_LM";
         JDABuilder jdaBuilder = JDABuilder.createDefault(token)
-                .setActivity(Activity.watching("you niggas"));
+                .setActivity(Activity.playing("your balls"));
         JDA jda = jdaBuilder
                 .enableIntents(
-                        GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MESSAGES,
+                        GatewayIntent.MESSAGE_CONTENT,GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGE_TYPING,
                         GatewayIntent.GUILD_MEMBERS
                 )
