@@ -1,19 +1,17 @@
 package org.encounter.events;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MessageListener extends ListenerAdapter {
@@ -51,6 +49,12 @@ public class MessageListener extends ListenerAdapter {
             eb.addField("n$help", "Show's you this nigga.", false);
             event.getChannel().sendMessage("n$help by " + author).setEmbeds(eb.build()).queue();
             return;
+        } else {
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("Please wait");
+            eb.setDescription("This command may take a loong time");
+            eb.setColor(new Color(53, 30, 16));
+            event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
         }
 
         final String[] N_words = {
@@ -59,24 +63,44 @@ public class MessageListener extends ListenerAdapter {
         };
 
         HashMap<String, Integer> Nigga_board = new HashMap<>();
-        Guild g = event.getGuild();
-        for (TextChannel textChannel : g.getTextChannels()) {
-            MessageHistory messageHistory = MessageHistory.getHistoryFromBeginning(textChannel).complete();
-            List<Message> messages = messageHistory.getRetrievedHistory();
+        List<Message> messages = new ArrayList<>();
+        for (TextChannel textChannel : event.getGuild().getTextChannels()) {
+            List<Message> history = textChannel.getHistory().retrievePast(100).complete();
+            messages.addAll(history);
+            long lastMessageId = history.getLast().getIdLong();
+            List<Message> newMessages = textChannel.getHistoryBefore(lastMessageId, 100)
+                    .complete().getRetrievedHistory();
+            do {
+                messages.addAll(newMessages);
+                history = newMessages;
+                try {
+                    lastMessageId = history.getLast().getIdLong();
+                    newMessages = textChannel.getHistoryBefore(lastMessageId, 100).complete().getRetrievedHistory();
+                } catch (Exception e) {
+                    break;
+                }
+            } while (!newMessages.isEmpty());
+        }
 
-            for (Message message: messages) {
-                for (String n_word : N_words) {
+        if (messages.isEmpty()) {
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("Top Nigga");
+            eb.setDescription("This place looks shit, No one have yet sent a message");
+            eb.setColor(new Color(53, 30, 16));
+            event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
+            return;
+        }
 
-                    if (message.getAuthor().isBot()) break;
-
-                    Pattern pattern = Pattern.compile(n_word, Pattern.CASE_INSENSITIVE);
-                    if (pattern.matcher(message.getContentRaw()).find()) {
-                        if (!Nigga_board.containsKey(message.getAuthor().getEffectiveName())) {
-                            Nigga_board.put(message.getAuthor().getEffectiveName(), 1);
-                        } else {
-                            Nigga_board.replace(message.getAuthor().getEffectiveName(),
-                                    Nigga_board.get(message.getAuthor().getEffectiveName()) + 1);
-                        }
+        for (Message message : messages) {
+            for (String w : N_words) {
+                Pattern pattern = Pattern.compile(w, Pattern.CASE_INSENSITIVE);
+                Matcher matcher = pattern.matcher(message.getContentRaw());
+                String name = message.getAuthor().getGlobalName();
+                if (matcher.find()) {
+                    if (!Nigga_board.containsKey(name)) {
+                        Nigga_board.put(name, 1);
+                    } else {
+                        Nigga_board.replace(name, Nigga_board.get(name) + 1);
                     }
                 }
             }
@@ -87,9 +111,10 @@ public class MessageListener extends ListenerAdapter {
             eb.setTitle("Top Nigga");
             eb.setDescription("I see no N-word enjoyers in this server");
             eb.setColor(new Color(53, 30, 16));
-            event.getChannel().sendMessage("n$help by " + author).setEmbeds(eb.build()).queue();
+            event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
             return;
         }
+
 
         switch (event.getMessage().getContentRaw()) {
             case "n$top":
@@ -159,16 +184,22 @@ public class MessageListener extends ListenerAdapter {
                     eb.setTitle("Top Nigga");
                     eb.setDescription("The only Enjoyer I see. Keep it up");
                     eb.setColor(new Color(53, 30, 16));
-                    eb.addField(users[1],
-                            String.format("Score: %s", scores[1]) , false);
+                    eb.addField(users[0],
+                            String.format("Score: %s", scores[0]) , false);
                     eb.addField(users[1],
                             String.format("Score: %s", scores[1]) , false);
                     eb.addField(users[2],
                             String.format("Score: %s", scores[2]) , false);
                     event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
                 }
-
                 break;
         }
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
