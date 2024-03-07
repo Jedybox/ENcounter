@@ -1,6 +1,7 @@
 package org.encounter.events;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -22,7 +23,7 @@ public class MessageListener extends ListenerAdapter {
         if (event.getMessage().getAuthor().isBot()) return;
 
         final String[] commands = {
-                "n$top", "n$leads", "n$help"
+                "n!top", "n!leads", "n!help"
         };
 
         boolean messageIsCommand = false;
@@ -31,6 +32,18 @@ public class MessageListener extends ListenerAdapter {
                     event.getMessage().getContentRaw().contains(c)) {
 
                 messageIsCommand = true;
+                break;
+            }
+        }
+
+        boolean commandIsNameCommand = false;
+        List<Member> members = event.getGuild().getMembers();
+        for (Member member : members) {
+            String name = member.getUser().getGlobalName();
+            if (event.getMessage().getContentRaw().equals("n!"+name) ||
+                    event.getMessage().getContentRaw().contains("n!"+name)) {
+                messageIsCommand = true;
+                commandIsNameCommand = true;
                 break;
             }
         }
@@ -52,14 +65,16 @@ public class MessageListener extends ListenerAdapter {
         } else {
             EmbedBuilder eb = new EmbedBuilder();
             eb.setTitle("Please wait");
-            eb.setDescription("This command may take a loong time");
+            eb.setDescription("This command may take a long time");
             eb.setColor(new Color(53, 30, 16));
             event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
         }
 
         final String[] N_words = {
                 "nigga", "nigger", "nig", "wachigger", "negro", "negra",
-                "n1gga", "n1gger", "n1g", "wach1gger", "n3gro",
+                "n1gga", "n1gger", "n1g", "wach1gger", "n3gro", "n3gra",
+                "chigger", "ch1gger", "chigg3r", "ch1gg3r", "monkey", "m0nkey",
+                "monk3y", "m0nk3y"
         };
 
         HashMap<String, Integer> Nigga_board = new HashMap<>();
@@ -115,9 +130,32 @@ public class MessageListener extends ListenerAdapter {
             return;
         }
 
+        if (commandIsNameCommand) {
+            for (Member member : event.getGuild().getMembers()){
+                String name = member.getUser().getGlobalName();
+                if (event.getMessage().getContentRaw().equals("n!"+name) ||
+                        event.getMessage().getContentRaw().contains("n!"+name)) {
+                    EmbedBuilder eb = new EmbedBuilder();
+                    if (!Nigga_board.containsKey(name)){
+                        eb.setTitle(name+" N-word count stat");
+                        eb.setDescription("Bro haven't message N-words, yet.");
+                        event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
+                    } else  {
+                        for (Map.Entry<String, Integer> nig : Nigga_board.entrySet()) {
+                            if (nig.getKey().equals(name)) {
+                                eb.setTitle(name+" N-word count stat");
+                                eb.setDescription("N-word score: " + nig.getValue());
+                                event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         switch (event.getMessage().getContentRaw()) {
-            case "n$top":
+            case "n!top":
                 int topScore = Collections.max(Nigga_board.values());
                 for (Map.Entry<String, Integer> nigger : Nigga_board.entrySet()) {
 
@@ -136,42 +174,45 @@ public class MessageListener extends ListenerAdapter {
                 }
 
                 break;
-            case "n$leads":
+            case "n!leads":
                 int score = Collections.max(Nigga_board.values());
-                int i = 0;
                 String[] users = new String[3];
                 int[] scores = new int[3];
 
-                if (Nigga_board.size() == 1) {
-                    i++;
-                } else if (Nigga_board.size() == 2) {
-                    i += 2;
-                } else if (Nigga_board.size() > 2) {
-                    i += 3;
-                }
-
-                for (int j = i; j < Nigga_board.size() ;j++) {
-                    for (Map.Entry<String, Integer> nigga : Nigga_board.entrySet()) {
-                        if (score == nigga.getValue()) {
-                            users[j] = nigga.getKey();
-                            scores[j] = nigga.getValue();
-                            Nigga_board.remove(nigga.getKey());
-                            break;
+                if (Nigga_board.size() > 3){
+                    for (int j = 0; j < Nigga_board.size(); j++) {
+                        for (Map.Entry<String, Integer> nigga : Nigga_board.entrySet()) {
+                            if (score == nigga.getValue()) {
+                                users[j] = nigga.getKey();
+                                scores[j] = nigga.getValue();
+                                Nigga_board.remove(nigga.getKey());
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    for (int j = 0; j < 3;j++) {
+                        for (Map.Entry<String, Integer> nigga : Nigga_board.entrySet()) {
+                            if (score == nigga.getValue()) {
+                                users[j] = nigga.getKey();
+                                scores[j] = nigga.getValue();
+                                Nigga_board.remove(nigga.getKey());
+                                break;
+                            }
                         }
                     }
                 }
 
-                if (i == 1) {
-                    EmbedBuilder eb = new EmbedBuilder();
+                EmbedBuilder eb = new EmbedBuilder();
+                if (Nigga_board.size() == 1) {
                     eb.setTitle("Top Nigga");
                     eb.setDescription("The only Enjoyer I see. Keep it up");
                     eb.setColor(new Color(53, 30, 16));
                     eb.addField(users[0],
                             String.format("Score: %s", scores[0]) , false);
                     event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
-                } else if (i == 2) {
-                    EmbedBuilder eb = new EmbedBuilder();
-                    eb.setTitle("Top Nigga");
+                } else if (Nigga_board.size() == 2) {
+                    eb.setTitle("Top Niggas");
                     eb.setDescription("The only Enjoyer I see. Keep it up");
                     eb.setColor(new Color(53, 30, 16));
                     eb.addField(users[0],
@@ -179,9 +220,8 @@ public class MessageListener extends ListenerAdapter {
                     eb.addField(users[1],
                             String.format("Score: %s", scores[1]) , false);
                     event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
-                } else if (i > 2) {
-                    EmbedBuilder eb = new EmbedBuilder();
-                    eb.setTitle("Top Nigga");
+                } else if (Nigga_board.size() > 2) {
+                    eb.setTitle("Top Niggas");
                     eb.setDescription("The only Enjoyer I see. Keep it up");
                     eb.setColor(new Color(53, 30, 16));
                     eb.addField(users[0],
