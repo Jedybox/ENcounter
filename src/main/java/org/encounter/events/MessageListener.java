@@ -158,7 +158,6 @@ public class MessageListener extends ListenerAdapter {
                         event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
                         break;
                     }
-
                 }
 
                 break;
