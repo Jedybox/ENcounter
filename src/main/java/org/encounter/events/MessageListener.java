@@ -94,31 +94,24 @@ public class MessageListener extends ListenerAdapter {
                 } catch (Exception e) {
                     break;
                 }
-            } while (!newMessages.isEmpty());
-        }
+            } while (!newMessages.isEmpty() || messages.size() == 500);
 
-        if (messages.isEmpty()) {
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setTitle("Top Nigga");
-            eb.setDescription("This place looks shit, No one have yet sent a message");
-            eb.setColor(new Color(53, 30, 16));
-            event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
-            return;
-        }
-
-        for (Message message : messages) {
-            for (String w : N_words) {
-                Pattern pattern = Pattern.compile(w, Pattern.CASE_INSENSITIVE);
-                Matcher matcher = pattern.matcher(message.getContentRaw());
-                String name = message.getAuthor().getGlobalName();
-                if (matcher.find()) {
-                    if (!Nigga_board.containsKey(name)) {
-                        Nigga_board.put(name, 1);
-                    } else {
-                        Nigga_board.replace(name, Nigga_board.get(name) + 1);
+            for (Message message : messages) {
+                for (String w : N_words) {
+                    Pattern pattern = Pattern.compile(w, Pattern.CASE_INSENSITIVE);
+                    Matcher matcher = pattern.matcher(message.getContentRaw());
+                    String name = message.getAuthor().getGlobalName();
+                    if (matcher.find()) {
+                        if (!Nigga_board.containsKey(name)) {
+                            Nigga_board.put(name, 1);
+                        } else {
+                            Nigga_board.replace(name, Nigga_board.get(name) + 1);
+                        }
                     }
                 }
             }
+
+            messages.clear();
         }
 
         if (Nigga_board.isEmpty()) {
@@ -136,20 +129,15 @@ public class MessageListener extends ListenerAdapter {
                 if (event.getMessage().getContentRaw().equals("n!"+name) ||
                         event.getMessage().getContentRaw().contains("n!"+name)) {
                     EmbedBuilder eb = new EmbedBuilder();
+                    eb.setTitle(name+"'s N-word count stat");
                     if (!Nigga_board.containsKey(name)){
-                        eb.setTitle(name+" N-word count stat");
                         eb.setDescription("Bro haven't message N-words, yet.");
                         event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
                     } else  {
-                        for (Map.Entry<String, Integer> nig : Nigga_board.entrySet()) {
-                            if (nig.getKey().equals(name)) {
-                                eb.setTitle(name+" N-word count stat");
-                                eb.setDescription("N-word score: " + nig.getValue());
-                                event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
-                                return;
-                            }
-                        }
+                        eb.setDescription("N-word score: " + Nigga_board.get(name));
+                        event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
                     }
+                    return;
                 }
             }
         }
@@ -178,68 +166,33 @@ public class MessageListener extends ListenerAdapter {
                 int score = Collections.max(Nigga_board.values());
                 String[] users = new String[3];
                 int[] scores = new int[3];
+                int amountOfUsers = 0;
 
-                if (Nigga_board.size() > 3){
-                    for (int j = 0; j < Nigga_board.size(); j++) {
-                        for (Map.Entry<String, Integer> nigga : Nigga_board.entrySet()) {
-                            if (score == nigga.getValue()) {
-                                users[j] = nigga.getKey();
-                                scores[j] = nigga.getValue();
-                                Nigga_board.remove(nigga.getKey());
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    for (int j = 0; j < 3;j++) {
-                        for (Map.Entry<String, Integer> nigga : Nigga_board.entrySet()) {
-                            if (score == nigga.getValue()) {
-                                users[j] = nigga.getKey();
-                                scores[j] = nigga.getValue();
-                                Nigga_board.remove(nigga.getKey());
-                                break;
-                            }
-                        }
+                for (Map.Entry<String, Integer> nigga : Nigga_board.entrySet()) {
+                    if (amountOfUsers == 2) break;
+                    if (score == nigga.getValue()){
+                        users[amountOfUsers] = nigga.getKey();
+                        scores[amountOfUsers] = nigga.getValue();
+                        amountOfUsers++;
                     }
                 }
 
                 EmbedBuilder eb = new EmbedBuilder();
-                if (Nigga_board.size() == 1) {
-                    eb.setTitle("Top Nigga");
-                    eb.setDescription("The only Enjoyer I see. Keep it up");
-                    eb.setColor(new Color(53, 30, 16));
-                    eb.addField(users[0],
-                            String.format("Score: %s", scores[0]) , false);
-                    event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
-                } else if (Nigga_board.size() == 2) {
-                    eb.setTitle("Top Niggas");
-                    eb.setDescription("The only Enjoyer I see. Keep it up");
-                    eb.setColor(new Color(53, 30, 16));
-                    eb.addField(users[0],
-                            String.format("Score: %s", scores[0]) , false);
-                    eb.addField(users[1],
-                            String.format("Score: %s", scores[1]) , false);
-                    event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
-                } else if (Nigga_board.size() > 2) {
-                    eb.setTitle("Top Niggas");
-                    eb.setDescription("The only Enjoyer I see. Keep it up");
-                    eb.setColor(new Color(53, 30, 16));
-                    eb.addField(users[0],
-                            String.format("Score: %s", scores[0]) , false);
-                    eb.addField(users[1],
-                            String.format("Score: %s", scores[1]) , false);
-                    eb.addField(users[2],
-                            String.format("Score: %s", scores[2]) , false);
-                    event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
+                eb.setTitle("Top Nigga");
+                eb.setDescription("Leading N-word enjoyers. Keep it up");
+                for (int i = 0; i <= amountOfUsers; i++){
+                    try {
+                        eb.addField(
+                                users[i],
+                                String.format("Score: %s", scores[i]),
+                                false);
+                    } catch (Exception e) {
+                        break;
+                    }
                 }
+                event.getChannel().sendMessage("").setEmbeds(eb.build()).queue();
+
                 break;
         }
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 }
